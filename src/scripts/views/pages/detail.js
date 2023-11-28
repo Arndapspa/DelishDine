@@ -2,7 +2,7 @@ import $ from 'jquery';
 import avatar from '../../../public/images/avatar.png';
 import Api from '../../data/api';
 import UrlParser from '../../routes/url-parser';
-import RestaurantLiked from '../../utils/local-db';
+import LikeButton from '../../utils/like-button-initial';
 
 const Detail = {
     async render() {
@@ -23,8 +23,10 @@ const Detail = {
 
       $('.content-detail').html(tmpDetailData);
 
-      await this.toggleBtnFavorite(detail);
-
+      LikeButton.init({
+        likeButtonContainer: document.querySelector('.favorite-detail'),
+        restaurant: detail,
+      });
       return true;
     },
     async fetchDetailRestaurant(detail) {
@@ -67,7 +69,7 @@ const Detail = {
             </div>
             <p>${element.review}</p>
             <div class="review-profile">
-              <img src="${avatar}" alt="Foto user">
+              <img class="lazyload" data-src="${avatar}" alt="Foto user" width="44" height="44">
               <div class="profile-detail">
                 <h3>${element.name}</h3>
                 <div class="date">${element.date}</div>
@@ -81,15 +83,13 @@ const Detail = {
       
         <a href="/" class="btn-back"><i class="fa-solid fa-arrow-left"></i>Back To Home</a>
       <div class="detail-resto">
-          <img src="https://restaurant-api.dicoding.dev/images/medium/${detail.pictureId}" alt="Foto ${detail.name}">
+          <img class="lazyload" data-src="https://restaurant-api.dicoding.dev/images/medium/${detail.pictureId}" alt="Foto ${detail.name}">
       </div>
       <div class="cate-fav">
         <div class="categories">
         ${listCategories}
         </div>
-        <div class="favorite-detail">
-          <button class="button-circle" id="favorite"></button>
-        </div>
+        <div class="favorite-detail"></div>
       </div>
       <div class="detail-content">
           <h1 class="name">${detail.name}</h1>
@@ -137,28 +137,6 @@ const Detail = {
           ${listReviews}
           </div>
       </div>`;
-    },
-    async toggleBtnFavorite(dataRetaurant) {
-      const checkRestaurantLiked = await RestaurantLiked.findRestaurant(dataRetaurant.id);
-
-      const isFavorited = checkRestaurantLiked != null;
-      if (isFavorited) {
-        $('#favorite').html('<i class="fa-solid fa-heart"></i>');
-        $('#favorite').addClass('active');
-        $('#favorite').click(async () => {
-          await RestaurantLiked.deleteRestaurant(dataRetaurant.id);
-          $('#favorite').html('<i class="fa-regular fa-heart"></i>');
-          $('#favorite').removeClass('active');
-        });
-      } else {
-        $('#favorite').html('<i class="fa-regular fa-heart"></i>');
-        $('#favorite').removeClass('active');
-        $('#favorite').click(async () => {
-          await RestaurantLiked.pustRestaurant(dataRetaurant);
-          $('#favorite').html('<i class="fa-solid fa-heart"></i>');
-          $('#favorite').addClass('active');
-        });
-      }
     },
 };
 

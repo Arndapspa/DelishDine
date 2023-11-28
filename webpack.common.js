@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   entry: {
@@ -48,6 +49,9 @@ module.exports = {
         {
           from: path.resolve(__dirname, 'src/public/'),
           to: path.resolve(__dirname, 'dist/'),
+          globOptions: {
+            ignore: ['**/images/**'],
+          },
         },
       ],
     }),
@@ -55,6 +59,6 @@ module.exports = {
         swSrc: path.resolve(__dirname, 'src/scripts/sw.js'),
         swDest: './sw.bundle.js',
     }),
-    
+    new BundleAnalyzerPlugin(),
   ],
 };
